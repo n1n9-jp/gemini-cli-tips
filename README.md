@@ -2,9 +2,42 @@
 
 **This guide covers \~30 pro-tips for effectively using Gemini CLI for agentic coding**
 
-**Gemini CLI** is an open-source AI assistant that brings the power of Google's Gemini model directly into your [terminal](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=The%20Gemini%20CLI%20is%20an,via%20a%20Gemini%20API%20key). It functions as a conversational, "agentic" command-line tool - meaning it can reason about your requests, choose tools (like running shell commands or editing files), and execute multi-step plans to help with your development [workflow](https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-deep-dive-into-gemini-cli-with-taylor-mullen#:~:text=The%20Gemini%20CLI%20%20is,understanding%20of%20the%20developer%20workflow).
+**[Gemini CLI](https://github.com/google-gemini/gemini-cli)** is an open-source AI assistant that brings the power of Google's Gemini model directly into your [terminal](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=The%20Gemini%20CLI%20is%20an,via%20a%20Gemini%20API%20key). It functions as a conversational, "agentic" command-line tool - meaning it can reason about your requests, choose tools (like running shell commands or editing files), and execute multi-step plans to help with your development [workflow](https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-deep-dive-into-gemini-cli-with-taylor-mullen#:~:text=The%20Gemini%20CLI%20%20is,understanding%20of%20the%20developer%20workflow).
 
 In practical terms, Gemini CLI acts like a supercharged pair programmer and command-line assistant. It excels at coding tasks, debugging, content generation, and even system automation, all through natural language prompts. Before diving into pro tips, let's quickly recap how to set up Gemini CLI and get it running.
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Tip 1: Use **GEMINI.md** for Persistent Context](#tip-1-use-geminimd-for-persistent-context)
+- [Tip 2: Create Custom Slash Commands](#tip-2-create-custom-slash-commands)
+- [Tip 3: Extend Gemini with Your Own **MCP** Servers](#tip-3-extend-gemini-with-your-own-mcp-servers)
+- [Tip 4: Leverage Memory Addition & Recall](#tip-4-leverage-memory-addition--recall)
+- [Tip 5: Use Checkpointing and **/restore** as an Undo Button](#tip-5-use-checkpointing-and-restore-as-an-undo-button)
+- [Tip 6: Read Google Docs, Sheets, and More.](#tip-6-read-google-docs-sheets-and-more-with-a-workspace-mcp-server-configured-you-can-paste-a-docssheets-link-and-have-the-mcp-fetch-it-subject-to-permissions)
+- [Tip 7: Reference Files and Images with @ for Explicit Context](#tip-7-reference-files-and-images-with--for-explicit-context)
+- [Tip 8: On-the-Fly Tool Creation (Have Gemini Build Helpers)](#tip-8-on-the-fly-tool-creation-have-gemini-build-helpers)
+- [Tip 9: Use Gemini CLI for System Troubleshooting & Configuration](#tip-9-use-gemini-cli-for-system-troubleshooting--configuration)
+- [Tip 10: YOLO Mode - Auto-Approve Tool Actions (Use with Caution)](#tip-10-yolo-mode---auto-approve-tool-actions-use-with-caution)
+- [Tip 11: Headless & Scripting Mode (Run Gemini CLI in the Background)](#tip-11-headless--scripting-mode-run-gemini-cli-in-the-background)
+- [Tip 12: Save and Resume Chat Sessions](#tip-12-save-and-resume-chat-sessions)
+- [Tip 13: Multi-Directory Workspace - One Gemini, Many Folders](#tip-13-multi-directory-workspace---one-gemini-many-folders)
+- [Tip 14: Organize and Clean Up Your Files with AI Assistance](#tip-14-organize-and-clean-up-your-files-with-ai-assistance)
+- [Tip 15: Compress Long Conversations to Stay Within Context](#tip-15-compress-long-conversations-to-stay-within-context)
+- [Tip 16: Passthrough Shell Commands with \! (Talk to Your Terminal)](#tip-16-passthrough-shell-commands-with--talk-to-your-terminal)
+- [Tip 17: Treat Every CLI Tool as a Potential Gemini Tool](#tip-17-treat-every-cli-tool-as-a-potential-gemini-tool)
+- [Tip 18: Utilize Multimodal AI - Let Gemini See Images and More](#tip-18-utilize-multimodal-ai---let-gemini-see-images-and-more)
+- [Tip 19: Customize the $PATH (and Tool Availability) for Stability](#tip-19-customize-the-path-and-tool-availability-for-stability)
+- [Tip 20: Track and reduce token spend with token caching and stats](#tip-20-track-and-reduce-token-spend-with-token-caching-and-stats)
+- [Tip 21: Use **/copy** for Quick Clipboard Copy](#tip-21-use-copy-for-quick-clipboard-copy)
+- [Tip 22: Master **Ctrl+C** for Shell Mode and Exiting](#tip-22-master-ctrlc-for-shell-mode-and-exiting)
+- [Tip 23: Customize Gemini CLI with **settings.json**](#tip-23-customize-gemini-cli-with-settingsjson)
+- [Tip 24: Leverage IDE Integration (VS Code) for Context & Diffs](#tip-24-leverage-ide-integration-vs-code-for-context--diffs)
+- [Tip 25: Automate Repo Tasks with **Gemini CLI GitHub Action**](#tip-25-automate-repo-tasks-with-gemini-cli-github-action)
+- [Tip 26: Enable Telemetry for Insights and Observability](#tip-26-enable-telemetry-for-insights-and-observability)
+- [Tip 27: Keep an Eye on the Roadmap (Background Agents & More)](#tip-27-keep-an-eye-on-the-roadmap-background-agents--more)
+- [Tip 28: Extend Gemini CLI with **Extensions**](#tip-28-extend-gemini-cli-with-extensions)
+- [Tip 29: Corgi Mode Easter Egg 🐕](#additional-fun-corgi-mode-easter-egg-)
 
 ## Getting Started
 
@@ -58,11 +91,11 @@ With the basics out of the way, let's explore a series of pro tips and hidden fe
 When working on a project, you often have certain overarching details - e.g. coding style guidelines, project architecture, or important facts - that you want the AI to keep in mind. Gemini CLI allows you to encode these in one or more **GEMINI.md** files. Simply create a .gemini folder (if not already present) in your project, and add a Markdown file named GEMINI.md with whatever notes or instructions you want the AI to persist. For example:
 
 ```markdown
-\# Project Phoenix - AI Assistant
+# Project Phoenix - AI Assistant
 
-\- All Python code must follow PEP 8 style.  
-\- Use 4 spaces for indentation.  
-\- The user is building a data pipeline; prefer functional programming paradigms.
+- All Python code must follow PEP 8 style.  
+- Use 4 spaces for indentation.  
+- The user is building a data pipeline; prefer functional programming paradigms.
 ```
 
 Place this file in your project root (or in subdirectories for more granular context). Now, whenever you run gemini in that project, it will automatically load these instructions into [context](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Context%20Files%20%28). This means the model will *always* be primed with them, avoiding the need to prepend the same guidance to every prompt.
@@ -88,7 +121,7 @@ Gemini CLI supports **custom slash commands** that you can define in simple conf
 Let's walk through an example. Say you want a command to generate a unit test from a requirement description. You could create \~/.gemini/commands/test/gen.toml with the following content:
 
 ```markdown
-\# Invoked as: /test:gen "Description of the test"  
+# Invoked as: /test:gen "Description of the test"  
 description \= "Generates a unit test based on a requirement."  
 prompt \= """  
 You are an expert test engineer. Based on the following requirement, please write a comprehensive unit test using the Jest framework.
@@ -164,17 +197,17 @@ In short, **MCP servers unlock limitless integration**. They're a pro feature th
 
 This will store that fact so you (or the AI) don't forget it [later](https://binaryverseai.com/gemini-cli-open-source-ai-tool/#:~:text=Gemini%20CLI%20Ultimate%20Agent%3A%2060,a%20branch%20of%20conversation). You can then recall everything in memory with /memory show at any time.
 
-The **/memory** commands provide a simple but powerful mechanism for *persistent memory*. When you use /memory add \<text\>, the given text is appended to your project's global context (technically, it's saved into the global \~/.gemini/GEMINI.md file or the project's [GEMINI.md](https://genmind.ch/posts/Howto-Supercharge-Your-Terminal-with-Gemini-CLI/#:~:text=,load%20memory%20from%20%60GEMINI.md). It's a bit like taking a note and pinning it to the AI's virtual bulletin board. Once added, the AI will always see that note in the prompt context for future interactions, across sessions.
+The `/memory` commands provide a simple but powerful mechanism for *persistent memory*. When you use /memory add \<text\>, the given text is appended to your project's global context (technically, it's saved into the global \~/.gemini/GEMINI.md file or the project's [GEMINI.md](https://genmind.ch/posts/Howto-Supercharge-Your-Terminal-with-Gemini-CLI/#:~:text=,load%20memory%20from%20%60GEMINI.md). It's a bit like taking a note and pinning it to the AI's virtual bulletin board. Once added, the AI will always see that note in the prompt context for future interactions, across sessions.
 
 Consider an example: you're debugging an issue and discover a non-obvious insight ("The config flag X\_ENABLE must be set to true or the service fails to start"). If you add this to memory, later on if you or the AI are discussing a related problem, it won't overlook this critical detail - it's in the context.
 
 **Using /memory:**
 
-* \*/memory add "\<text\>"\* - Add a fact or note to memory (persistent context). This updates the GEMINI.md immediately with the new entry.
+* `memory add "\<text\>"\` - Add a fact or note to memory (persistent context). This updates the GEMINI.md immediately with the new entry.
 
-* \*/memory show\* - Display the full content of the memory (i.e. the combined context file that's currently loaded).
+* `memory show` - Display the full content of the memory (i.e. the combined context file that's currently loaded).
 
-* \*/memory refresh\* - Reload the context from disk (useful if you manually edited the GEMINI.md file outside of Gemini CLI, or if multiple people are collaborating on it).
+* `memory refresh` - Reload the context from disk (useful if you manually edited the GEMINI.md file outside of Gemini CLI, or if multiple people are collaborating on it).
 
 Because the memory is stored in Markdown, you can also manually edit the GEMINI.md file to curate or organize the info. The /memory commands are there for convenience during conversation, so you don't have to open an editor.
 
@@ -200,9 +233,9 @@ Alternatively, you can make it the default by adding to your config ("checkpoint
 
 If you then realize an AI-made edit is problematic, you have two options:
 
-* Run \*/restore list\* (or just /restore with no arguments) to see a list of recent checkpoints with timestamps and descriptions.
+* Run `*restore list*` (or just `/restore` with no arguments) to see a list of recent checkpoints with timestamps and descriptions.
 
-* Run \*/restore \<id\>\* to rollback to a specific checkpoint. If you omit the id and there's only one pending checkpoint, it will restore that by [default](https://medium.com/@ferreradaniel/gemini-cli-free-ai-tool-upgrade-5-new-features-you-need-right-now-04cfefac5e93#:~:text=Step).
+* Run `*restore <id>*` to rollback to a specific checkpoint. If you omit the id and there's only one pending checkpoint, it will restore that by [default](https://medium.com/@ferreradaniel/gemini-cli-free-ai-tool-upgrade-5-new-features-you-need-right-now-04cfefac5e93#:~:text=Step).
 
 For example:
 
@@ -349,7 +382,7 @@ In summary, **don't hesitate to fire up Gemini CLI as your assistant for environ
 
 ## Tip 10: YOLO Mode - Auto-Approve Tool Actions (Use with Caution)
 
-**Quick use-case:** If you're feeling confident (or adventurous), you can let Gemini CLI run tool actions without asking for your confirmation each time. This is **YOLO mode** (You Only Live Once). It's enabled by the \--yolo flag or by pressing Ctrl+Y during a [session](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=,prompt%20in%20an%20external%20editor). In YOLO mode, as soon as the AI decides on a tool (like running a shell command or writing to a file), it executes it immediately, without that "Approve? (y/n)" prompt.
+**Quick use-case:** If you're feeling confident (or adventurous), you can let Gemini CLI run tool actions without asking for your confirmation each time. This is **YOLO mode** (You Only Live Once). It's enabled by the `--yolo` flag or by pressing Ctrl+Y during a [session](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=,prompt%20in%20an%20external%20editor). In YOLO mode, as soon as the AI decides on a tool (like running a shell command or writing to a file), it executes it immediately, without that "Approve? (y/n)" prompt.
 
 **Why use YOLO mode?** Primarily for speed and convenience **when you trust the AI's actions**. Experienced users might toggle YOLO on if they're doing a lot of repetitive safe operations. For example, if you ask Gemini to generate 10 different files one after another, approving each can slow down the flow; YOLO mode would just let them all be written automatically. Another scenario is using Gemini CLI in a completely automated script or CI pipeline - you might run it headless with \--yolo so it doesn't pause for confirmation.
 
