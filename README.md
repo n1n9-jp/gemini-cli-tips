@@ -10,11 +10,15 @@ In practical terms, Gemini CLI acts like a supercharged pair programmer and comm
 
 **Installation:** You can install Gemini CLI via npm. For a global install, use:
 
-> npm install \-g @google/gemini-cli
+```bash
+npm install -g @google/gemini-cli
+```
 
 Or run it without installing using npx:
 
-> npx @google/gemini-cli
+```bash
+npx @google/gemini-cli
+```
 
 Gemini CLI is available on all major platforms (it's built with Node.js/TypeScript). Once installed, simply run the gemini command in your terminal to launch the interactive [CLI](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Interactive%20Mode%20,conversational%20session).
 
@@ -24,16 +28,22 @@ API key usage can offer higher quotas and enterprise data‑use protections; pro
 
 For example, add to your shell profile:
 
-> export GEMINI\_API\_KEY="YOUR\_KEY\_HERE"
+```bash
+export GEMINI_API_KEY="YOUR_KEY_HERE"
+```
 
 **Basic Usage:** To start an interactive session, just run gemini with no arguments. You'll get a gemini\> prompt where you can type requests or commands. For instance:
 
-> $ gemini  
-> gemini\> Create a React recipe management app using SQLite
+```bash
+$ gemini
+gemini> Create a React recipe management app using SQLite
+```
 
 You can then watch as Gemini CLI creates files, installs dependencies, runs tests, etc., to fulfill your request[\[9\]](https://genmind.ch/posts/Howto-Supercharge-Your-Terminal-with-Gemini-CLI/#:~:text=to%20enter%20the%20interactive%20REPL,language%20prompts%20like)[\[10\]](https://genmind.ch/posts/Howto-Supercharge-Your-Terminal-with-Gemini-CLI/#:~:text=and%20watch%20it%20create%20files%2C,and%20show%20you%20the%20results). If you prefer a one-shot invocation (non-interactive), use the \-p flag with a prompt, for example:
 
-> gemini \-p "Summarize the main points of the attached file. @./report.txt"
+```bash
+gemini -p "Summarize the main points of the attached file. @./report.txt"
+```
 
 This will output a single response and [exit](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=gemini). You can also pipe input into Gemini CLI: for example, echo "Count to 10" | gemini will feed the prompt via [stdin](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=gemini%20,txt).
 
@@ -57,7 +67,9 @@ Place this file in your project root (or in subdirectories for more granular con
 
 **How it works:** Gemini CLI uses a hierarchical context loading [system](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Hierarchical%20Loading%3A%20The%20CLI%20combines,The%20loading%20order%20is). It will combine **global context** (from \~/.gemini/GEMINI.md, which you can use for cross-project defaults) with your **project-specific GEMINI.md**, and even context files in subfolders. More specific files override more general ones. You can inspect what context was loaded at any time by using the command:
 
-\> /memory show
+```bash
+/memory show
+```
 
 This will display the full combined context the AI [sees](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=,current%20conversation%20with%20a%20tag). If you make changes to your GEMINI.md, use /memory refresh to reload the context without restarting the [session](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=,current%20conversation%20with%20a%20tag).
 
@@ -83,7 +95,9 @@ Requirement: {{args}}
 
 Now, after reloading or restarting Gemini CLI, you can simply type:
 
-\> /test:gen "Ensure the login button redirects to the dashboard upon success"
+```bash
+/test:gen "Ensure the login button redirects to the dashboard upon success"
+```
 
 Gemini CLI will recognize /test:gen and substitute the {{args}} in your prompt template with the provided argument (in this case, the requirement). The AI will then proceed to generate a Jest unit test [accordingly](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Example%3A%20%60). The description field is optional but is used when you run /help or /tools to list available commands.
 
@@ -103,7 +117,9 @@ Gemini CLI comes with several MCP servers out-of-the-box (for instance, ones ena
 
 **How to add one:** You can configure MCP servers via your settings.json or using the CLI. For a quick setup, try the CLI command:
 
-gemini mcp add myserver \--command "python3 my\_mcp\_server.py" \--port 8080
+```bash
+gemini mcp add myserver --command "python3 my_mcp_server.py" --port 8080
+```
 
 This would register a server named "myserver" that Gemini CLI will launch by running the given command (here a Python module) on port 8080\. In \~/.gemini/settings.json, it would add an entry under mcpServers. For example:
 
@@ -120,7 +136,9 @@ This would register a server named "myserver" that Gemini CLI will launch by run
 
 This configuration (based on the official docs) tells Gemini how to start the MCP server and [where](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Example%20). Once running, the tools provided by that server become available to Gemini CLI. You can list all MCP servers and their tools with the slash command:
 
-\> /mcp
+```bash
+/mcp
+```
 
 This will show any registered servers and what tool names they [expose](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Command%20Description%20,List%20active%20extensions).
 
@@ -136,7 +154,9 @@ In short, **MCP servers unlock limitless integration**. They're a pro feature th
 
 **Quick use-case:** Keep important facts at your AI's fingertips by adding them to its long-term memory. For example, after figuring out a database port or an API token, you can do:
 
-\> /memory add "Our staging RabbitMQ is on port 5673"
+```bash
+/memory add "Our staging RabbitMQ is on port 5673"
+```
 
 This will store that fact so you (or the AI) don't forget it [later](https://binaryverseai.com/gemini-cli-open-source-ai-tool/#:~:text=Gemini%20CLI%20Ultimate%20Agent%3A%2060,a%20branch%20of%20conversation). You can then recall everything in memory with /memory show at any time.
 
@@ -168,7 +188,9 @@ Gemini CLI's **checkpointing** feature acts as a safety net. When enabled, the C
 
 **How to use it:** You can turn on checkpointing by launching the CLI with the \--checkpointing flag:
 
-> gemini \--checkpointing
+```bash
+gemini --checkpointing
+```
 
 Alternatively, you can make it the default by adding to your config ("checkpointing": { "enabled": true } in [settings.json](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=%7B%20,true)). Once active, you'll notice that each time Gemini is about to write to a file, it says something like "Checkpoint saved."
 
@@ -180,14 +202,16 @@ If you then realize an AI-made edit is problematic, you have two options:
 
 For example:
 
-\> /restore
+```bash
+/restore
+```
 
 Gemini CLI might output:
 
 0: \[2025-09-22 10:30:15\] Before running 'apply\_patch'  
 1: \[2025-09-22 10:45:02\] Before running 'write\_file'
 
-You can then do \> /restore 0 to revert all file changes (and even the conversation context) back to how it was at that checkpoint. In this way, you can "undo" a mistaken code refactor or any other changes Gemini [made](https://medium.com/@ferreradaniel/gemini-cli-free-ai-tool-upgrade-5-new-features-you-need-right-now-04cfefac5e93#:~:text=1,point%20and%20roll%20back%20instantly).
+You can then do `/restore 0` to revert all file changes (and even the conversation context) back to how it was at that checkpoint. In this way, you can "undo" a mistaken code refactor or any other changes Gemini [made](https://medium.com/@ferreradaniel/gemini-cli-free-ai-tool-upgrade-5-new-features-you-need-right-now-04cfefac5e93#:~:text=1,point%20and%20roll%20back%20instantly).
 
 **What gets restored:** The checkpoint captures the state of your working directory (all files that Gemini CLI is allowed to modify) and the workspace files (conversation state may also be rolled back depending on how the checkpoint was captured). When you restore, it overwrites files to the old version and resets the conversation memory to that snapshot. It's like time-traveling the AI agent back to before it made the wrong turn. Note that it won't undo external side effects (for example, if the AI ran a database migration, it can't undo that), but anything in the file system and chat context is fair game.
 
@@ -201,7 +225,9 @@ In essence, **/restore** lets you use Gemini CLI with confidence. You can let th
 
 For example:
 
-\> Summarize the requirements from this design doc: [https://docs.google.com/document/d/\\](https://docs.google.com/document/d/\\)\<id\>
+```bash
+Summarize the requirements from this design doc: https://docs.google.com/document/d/\<id\>
+```
 
 Gemini can pull in the content of that Doc and incorporate it into its response. Similarly, it can read Google Sheets or Drive files by link, and even perform internal searches on Google's knowledge base (Moma) if you have access.
 
@@ -209,7 +235,9 @@ Gemini can pull in the content of that Doc and incorporate it into its response.
 
 For example, in an Agent Factory podcast demo, the team used a **Google Docs MCP** to save a summary directly to a [doc](https://cloud.google.com/blog/topics/developers-practitioners/agent-factory-recap-deep-dive-into-gemini-cli-with-taylor-mullen#:~:text=%2A%20Utilize%20the%20google,summary%20directly%20to%20Google%20Docs) - which implies they could also read the doc's content in the first place. In practice, you might do something like:
 
-\> @[https://docs.google.com/document/d/XYZ12345](https://docs.google.com/document/d/XYZ12345)
+```bash
+@https://docs.google.com/document/d/XYZ12345
+```
 
 Including a URL with @ (the context reference syntax) signals Gemini CLI to fetch that resource. With a Google Doc integration in place, the content of that document would be pulled in as if it were a local file. From there, the AI can summarize it, answer questions about it, or otherwise use it in the conversation.
 
@@ -227,19 +255,25 @@ In summary, **Gemini CLI can reach out beyond your local filesystem**. Whether i
 
 **Quick use-case:** Instead of describing a file's content or an image verbally, just point Gemini CLI directly to it. Using the @ syntax, you can attach files, directories, or images into your prompt. This guarantees the AI sees exactly what's in those files as [context](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Reference%20files%20or%20directories%20in,PDFs%2C%20audio%2C%20and%20video%20files). For example:
 
-\> Explain this code to me: @./src/main.js
+```bash
+Explain this code to me: @./src/main.js
+```
 
 This will include the contents of *src/main.js* in the prompt (up to Gemini's context size limits), so the AI can read it and explain [it](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Include%20a%20single%20file%3A).
 
 This @ *file reference* is one of Gemini CLI's most powerful features for developers. It eliminates ambiguity - you're not asking the model to rely on memory or guesswork about the file, you're literally handing it the file to read. You can use this for source code, text documents, logs, etc. Similarly, you can reference **entire directories**:
 
-\> Refactor the code in @./utils/ to use async/await.
+```bash
+Refactor the code in @./utils/ to use async/await.
+```
 
 By appending a path that ends in a slash, Gemini CLI will recursively include files from that [directory](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Include%20a%20whole%20directory%20) (within reason, respecting ignore files and size limits). This is great for multi-file refactors or analyses, as the AI can consider all relevant modules together.
 
 Even more impressively, you can reference **binary files like images** in prompts. Gemini CLI (using the Gemini model's multimodal capabilities) can understand images. For example:
 
-\> Describe what you see in this screenshot: @./design/mockup.png
+```bash
+Describe what you see in this screenshot: @./design/mockup.png
+```
 
 The image will be fed into the model, and the AI might respond with something like "This is a login page with a blue sign-in button and a header image," [etc](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Include%20an%20image%3A).. You can imagine the uses: reviewing UI mockups, organizing photos (as we'll see in a later tip), or extracting text from images (Gemini can do OCR as well).
 
@@ -251,7 +285,13 @@ A few notes on using @ references effectively:
 
 * **Explicit vs implicit context:** Taylor Mullen (the creator of Gemini CLI) emphasizes using @ for *explicit context injection* rather than relying on the model's memory or summarizing things yourself. It's more precise and ensures the AI isn't hallucinating content. Whenever possible, point the AI to the source of truth (code, config files, documentation) with @ references. This practice can significantly improve accuracy.
 
-* **Chaining references:** You can include multiple files in one prompt, like: \> Compare @./foo.py and @./bar.py and tell me differences. The CLI will include both files. Just be mindful of token limits; multiple large files might consume a lot of the context window.
+* **Chaining references:** You can include multiple files in one prompt, like:
+
+```bash
+Compare @./foo.py and @./bar.py and tell me differences.
+```
+
+The CLI will include both files. Just be mindful of token limits; multiple large files might consume a lot of the context window.
 
 Using @ is essentially how you **feed knowledge into Gemini CLI on the fly**. It turns the CLI into a multi-modal reader that can handle text and images. As a pro user, get into the habit of leveraging this - it's often faster and more reliable than asking the AI something like "Open the file X and do Y" (which it may or may not do on its own). Instead, you explicitly give it X to work with.
 
@@ -263,7 +303,9 @@ Gemini CLI is not limited to its pre-existing tools; it can use its coding abili
 
 * **Creating scripts:** You can prompt Gemini to create a script or program in the language of your choice. It will likely use the write\_file tool to create the file. For instance:
 
-\> Generate a Node.js script that reads all '.log' files in the current directory and reports the number of lines in each.
+```bash
+Generate a Node.js script that reads all '.log' files in the current directory and reports the number of lines in each.
+```
 
 Gemini CLI will draft the code, and with your approval, write it to a file (e.g. script.js). You can then run it by either using the \! shell command (e.g. \!node script.js) or by asking Gemini CLI to execute it (the AI might automatically use run\_shell\_command to execute the script it just wrote, if it deems it part of the plan).
 
@@ -309,7 +351,9 @@ In summary, **don't hesitate to fire up Gemini CLI as your assistant for environ
 
 To start in YOLO mode from the get-go, launch the CLI with:
 
-> gemini \--yolo
+```bash
+gemini --yolo
+```
 
 Or the short form gemini \-y. You'll see some indication in the CLI (like a different prompt or a notice) that auto-approve is [on](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=initial%20prompt.%20%2A%20%60,to%20revert%20changes). During an interactive session, you can toggle it by pressing **Ctrl+Y** at any [time](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=,prompt%20in%20an%20external%20editor) - the CLI will usually display a message like "YOLO mode enabled (all actions auto-approved)" in the footer.
 
@@ -331,8 +375,10 @@ For instance, to get a one-off answer without opening the REPL, you've seen you 
 
 * **System prompt override:** If you want to run Gemini CLI with a custom system persona or instruction set (different from the default), you can use the environment variable GEMINI\_SYSTEM\_MD. By setting this, you tell Gemini CLI to ignore its built-in system prompt and use your provided file [instead](https://medium.com/google-cloud/practical-gemini-cli-bring-your-own-system-instruction-19ea7f07faa2#:~:text=The%20,rather%20than%20its%20hardcoded%20defaults). For example:
 
-> export GEMINI\_SYSTEM\_MD="/path/to/custom\_system.md"  
-> gemini \-p "Perform task X with high caution"
+```bash
+export GEMINI_SYSTEM_MD="/path/to/custom_system.md"
+gemini -p "Perform task X with high caution"
+```
 
 This would load your custom\_system.md as the system prompt (the "role" and rules the AI follows) before executing the [prompt](https://medium.com/google-cloud/practical-gemini-cli-bring-your-own-system-instruction-19ea7f07faa2#:~:text=The%20feature%20is%20enabled%20by,specific%20configurations). Alternatively, if you set GEMINI\_SYSTEM\_MD=true, the CLI will look for a file named system.md in the current project's .gemini [directory](https://medium.com/google-cloud/practical-gemini-cli-bring-your-own-system-instruction-19ea7f07faa2#:~:text=The%20feature%20is%20enabled%20by,specific%20configurations). This feature is very advanced - it essentially allows you to *replace the built-in brain* of the CLI with your own instructions, which some users do for specialized workflows (like simulating a specific persona or enforcing ultra-strict policies). Use it carefully, as replacing the core prompt can affect tool usage (the core prompt contains important directions for how the AI selects and uses [tools](https://medium.com/google-cloud/practical-gemini-cli-bring-your-own-system-instruction-19ea7f07faa2#:~:text=If%20you%20read%20my%20previous,proper%20functioning%20of%20Gemini%20CLI)).
 
@@ -348,7 +394,9 @@ One more headless trick: **the \--format=json flag** (or config setting). Gemini
 
 **Example:** Let's say you want a daily summary of a news website. You could have a script:
 
-> gemini \-p "Web-fetch \\"[https://news.site/top-stories\\\\](https://news.site/top-stories\\\\)" and extract the headlines, then write them to headlines.txt"
+```bash
+gemini -p "Web-fetch \"https://news.site/top-stories\" and extract the headlines, then write them to headlines.txt"
+```
 
 With \--yolo perhaps, so it won't ask confirmation to write the file. This would use the web fetch tool to get the page and the file write tool to save the headlines. All automatically, no human in the loop. The possibilities are endless once you treat Gemini CLI as a scriptable component.
 
@@ -380,20 +428,28 @@ Under the hood, these sessions are stored likely in \~/.gemini/chats/ or a simil
 
 **Usage example:**
 
-\> /chat save api-upgrade
+```bash
+/chat save api-upgrade
+```
 
 *(Session saved as "api-upgrade")*
 
-\> /quit
+```bash
+/quit
+```
 
 *(Later, reopen CLI)*
 
-$ gemini  
-gemini\> /chat list
+```bash
+$ gemini
+gemini> /chat list
+```
 
 *(Shows: api-upgrade)*
 
-gemini\> /chat resume api-upgrade
+```bash
+gemini> /chat resume api-upgrade
+```
 
 Now the model greets you with the last exchange's state ready. You can confirm by scrolling up that all your previous messages are present.
 
@@ -409,7 +465,9 @@ There are two ways to use **multi-directory mode**:
 
 * **Launch flag:** Use the \--include-directories (or \-I) flag when starting Gemini CLI. For example:
 
-> gemini \--include-directories "../backend:../frontend"
+```bash
+gemini --include-directories "../backend:../frontend"
+```
 
 This assumes you run the command from, say, a scripts directory and want to include two sibling folders. You provide a colon-separated list of paths. Gemini CLI will then treat all those directories as part of one big workspace.
 
@@ -421,16 +479,22 @@ When multi-dir mode is active, the CLI's context and tools consider files across
 
 **Example:** Let's say you have client/ and server/. You start:
 
-> cd client  
-> gemini \--include-directories "../server"
+```bash
+cd client
+gemini --include-directories "../server"
+```
 
 Now at the gemini\> prompt, if you do \> \!ls, you'll see it can list files in both client and server (it might show them as separate paths). You could do:
 
-\> Open server/routes/api.py and client/src/api.js side by side to compare function names.
+```bash
+Open server/routes/api.py and client/src/api.js side by side to compare function names.
+```
 
 The AI will have access to both files. Or you might say:
 
-\> The API changed: the endpoint "/users/create" is now "/users/register". Update both backend and frontend accordingly.
+```bash
+The API changed: the endpoint "/users/create" is now "/users/register". Update both backend and frontend accordingly.
+```
 
 It can simultaneously create a patch in the backend route and adjust the frontend fetch call.
 
@@ -452,13 +516,17 @@ Here's how you might replicate such a workflow with Gemini CLI manually:
 
 1. **Survey the directory:** Use a prompt to have Gemini list and categorize. For example:
 
-\> List all files in the current directory and categorize them as "images", "videos", "documents", "archives", or "others".
+```bash
+List all files in the current directory and categorize them as "images", "videos", "documents", "archives", or "others".
+```
 
 Gemini might use \!ls or similar to get the file list, then analyze the names/extensions to produce categories.
 
 1. **Plan the organization:** Ask Gemini how it would like to reorganize. For example:
 
-\> Propose a new folder structure for these files. I want to separate by type (Images, Videos, Documents, etc.). Also identify any files that seem like duplicates or unnecessary.
+```bash
+Propose a new folder structure for these files. I want to separate by type (Images, Videos, Documents, etc.). Also identify any files that seem like duplicates or unnecessary.
+```
 
 The AI might respond with a plan: e.g., *"Create folders: Images/, Videos/, Documents/, Archives/. Move X.png, Y.jpg to Images/; move A.mp4 to Videos/; etc. The file temp.txt looks unnecessary (maybe a temp file)."*
 
@@ -468,7 +536,9 @@ Throughout, Gemini's natural language understanding is key. It can reason, for i
 
 **Renaming files by content:** A particularly magical use is having Gemini rename files to be more descriptive. The Dev Community article "7 Insane Gemini CLI Tips" describes how Gemini can **scan images and automatically rename them** based on their [content](https://dev.to/therealmrmumba/7-insane-gemini-cli-tips-that-will-make-you-a-superhuman-developer-2d7h#:~:text=If%20your%20project%20folder%20is,using%20relevant%20and%20descriptive%20terms). For example, a file named IMG\_1234.jpg might be renamed to login\_screen.jpg if the AI sees it's a screenshot of a login [screen](https://dev.to/therealmrmumba/7-insane-gemini-cli-tips-that-will-make-you-a-superhuman-developer-2d7h#:~:text=If%20your%20project%20folder%20is,using%20relevant%20and%20descriptive%20terms). To do this, you could prompt:
 
-\> For each .png image here, look at its content and rename it to something descriptive.
+```bash
+For each .png image here, look at its content and rename it to something descriptive.
+```
 
 Gemini will open each image (via vision tool), get a description, then propose a mv IMG\_1234.png login\_screen.png [action](https://dev.to/therealmrmumba/7-insane-gemini-cli-tips-that-will-make-you-a-superhuman-developer-2d7h#:~:text=If%20your%20project%20folder%20is,using%20relevant%20and%20descriptive%20terms). This can dramatically improve the organization of assets, especially in design or photo folders.
 
@@ -512,18 +582,22 @@ This tip is about **Shell Mode** in Gemini CLI. There are two ways to use it:
 
 * **Single command:** Just put \! at the start of your prompt, followed by any command and arguments. This will execute that command in the current working directory and display the output [in-line](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Run%20shell%20commands%20directly%20in,the%20CLI). For example:
 
-\> \!ls \-lh src/
+```bash
+!ls -lh src/
+```
 
 will list the files in the src directory, outputting something like you'd see in a normal terminal. After the output, the Gemini prompt returns so you can continue chatting or issue more commands.
 
 * **Persistent shell mode:** If you enter \! alone and hit Enter, Gemini CLI switches into a sub-mode where you get a shell prompt (often it looks like shell\> or [similar)](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=). Now you can type multiple shell commands interactively. It's basically a mini-shell within the CLI. You exit this mode by typing \! on an empty line again (or exit). For instance:
 
-\> \!  
-shell\> pwd  
-/home/alice/project  
-shell\> python \--version  
-Python 3.x.x  
-shell\> \!
+```bash
+!
+shell> pwd
+/home/alice/project
+shell> python --version
+Python 3.x.x
+shell> !
+```
 
 After the final \!, you're back to the normal Gemini prompt.
 
@@ -601,13 +675,17 @@ For most users, this isn't an issue, but for pro users with lots of custom scrip
 
 **How to set PATH for Gemini:** Easiest is inline on launch:
 
+```bash
 PATH=/usr/bin:/usr/local/bin gemini
+```
 
 This runs Gemini CLI with a restricted PATH of just those directories. You might exclude directories where experimental or dangerous scripts lie. Alternatively, create a small shell script wrapper that purges or adjusts PATH then exec's gemini.
 
 Another approach is using environment or config to explicitly disable certain tools. For instance, if you absolutely never want the AI to use rm or some destructive tool, you could technically create an alias or dummy rm in a safe PATH that does nothing (though this could interfere with normal operations, so maybe not that one). A better method is the **exclude list** in settings. In an extension or settings.json, you can exclude tool [names](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=). E.g.,
 
-"excludeTools": \["run\_shell\_command"\]
+```json
+"excludeTools": ["run_shell_command"]
+```
 
 This extreme example would stop *all* shell commands from running (making Gemini effectively read-only). More granular, there was mention of skipping confirmation for some; similarly you might configure something like:
 
@@ -641,19 +719,25 @@ Use an auth mode that enables caching. Token caching is available when you authe
 
 Inspect your usage and cache hits. Run the stats command during a session. It shows total tokens and a cached field when caching is active.
 
+```bash
 /stats
+```
 
 The command's description and cached reporting behavior are documented in the commands reference and FAQ. [Google Gemini+1](https://google-gemini.github.io/gemini-cli/docs/cli/commands.html?utm_source=chatgpt.com)
 
 Capture metrics in scripts. When running headless, output JSON and parse the stats block, which includes tokens.cached for each model:
 
-gemini \-p "Summarize README" \--output-format json
+```bash
+gemini -p "Summarize README" --output-format json
+```
 
 The headless guide documents the JSON schema with cached token counts. [Google Gemini](https://google-gemini.github.io/gemini-cli/docs/cli/headless.html)
 
 Save a session summary to file: For CI or budget tracking, write a JSON session summary to disk.
 
-gemini \-p "Analyze logs" \--session-summary usage.json
+```bash
+gemini -p "Analyze logs" --session-summary usage.json
+```
 
 This flag is listed in the changelog. [Google Gemini](https://google-gemini.github.io/gemini-cli/docs/changelogs/)
 
