@@ -475,3 +475,72 @@ Gemini will open each image (via vision tool), get a description, then propose a
 **Safety tip:** When letting the AI loose on file moves or deletions, have backups or at least be ready to undo (with /restore or your own backup). It’s wise to do a dry-run: ask Gemini to print the commands it *would* run to organize, without executing them, so you can review. For instance: “List the mv and mkdir commands needed for this plan, but don’t execute them yet.” Once you review the list, you can either copy-paste execute them, or instruct Gemini to proceed.
 
 This is a prime example of using Gemini CLI for “non-obvious” tasks – it’s not just writing code, it’s doing **system housekeeping with AI smarts**. It can save time and bring a bit of order to chaos. After all, as developers we accumulate clutter (logs, old scripts, downloads), and an AI janitor can be quite handy.
+
+## Tip 15: Compress Long Conversations to Stay Within Context
+
+**Quick use-case:** If you’ve been chatting with Gemini CLI for a long time, you might hit the model’s context length limit or just find the session getting unwieldy. Use the /compress command to summarize the conversation so far, replacing the full history with a concise [summary](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Command%20Description%20,files). This frees up space for more discussion without starting from scratch.
+
+Large language models have a fixed context window (Gemini 2.5 Pro’s is very large, but not infinite). If you exceed it, the model may start forgetting earlier messages or lose coherence. The /compress feature is essentially an **AI-generated tl;dr** of your session that keeps important points.
+
+**How it works:** When you type \*/compress\*, Gemini CLI will take the entire conversation (except system context) and produce a summary. It then replaces the chat history with that summary as a single system or assistant message, preserving essential details but dropping minute-by-minute dialogue. It will indicate that compression happened. For example, after /compress, you might see something like:
+
+\--- Conversation compressed \---  
+Summary of discussion: The user and assistant have been debugging a memory leak in an application. Key points: The issue is likely in DataProcessor.js, where objects aren’t being freed. The assistant suggested adding logging and identified a possible infinite loop. The user is about to test a fix.  
+\--- End of summary \---
+
+From that point on, the model only has that summary (plus new messages) as context for what happened before. This usually is enough if the summary captured the salient info.
+
+**When to compress:** Ideally before you *hit* the limit. If you notice the session is getting lengthy (several hundred turns or a lot of code in context), compress proactively. The cheat sheet mentions an automatic compression setting (e.g., compress when context exceeds 60% of [max](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=%22includeDirectories%22%3A%20%5B%22..%2Fshared,98C379%22%2C%20%22AccentYellow)). If you enable that, Gemini might auto-compress and let you know. Otherwise, manual /compress is in your toolkit.
+
+**After compressing:** You can continue the conversation normally. If needed, you can compress multiple times in a very long session. Each time, you lose some granularity, so don’t compress too frequently for no reason – you might end up with an overly brief remembrance of a complex discussion. But generally the model’s own summarization is pretty good at keeping the key facts (and you can always restate anything critical yourself).
+
+**Context window example:** Let’s illustrate. Suppose you fed in a large codebase by referencing many files and had a 1M token context (the max). If you then want to shift to a different part of the project, rather than starting a new session (losing all that understanding), you could compress. The summary will condense the knowledge gleaned from the code (like “We loaded modules A, B, C. A has these functions... B interacts with C in these ways...”). Now you can proceed to ask about new things with that knowledge retained abstractly.
+
+**Memory vs Compression:** Note that compression doesn’t save to long-term memory, it’s local to the conversation. If you have facts you *never* want lost, consider Tip 4 (adding to /memory) – because memory entries will survive compression (they’ll just be reinserted anyway since they are in GEMINI.md context). Compression is more about ephemeral chat content.
+
+**A minor caution:** after compression, the AI’s style might slightly change because it’s effectively seeing a “fresh” conversation with a summary. It might reintroduce itself or change tone. You can instruct it like “Continue from here... (we compressed)” to smooth it out. In practice, it often continues fine.
+
+To summarize (pun intended), **use /compress as your session grows long** to maintain performance and relevance. It helps Gemini CLI focus on the bigger picture instead of every detail of the conversation’s history. This way, you can have marathon debugging sessions or extensive design discussions without running out of the “mental paper” the AI is writing on.
+
+## Tip 16: Passthrough Shell Commands with \! (Talk to Your Terminal)
+
+**Quick use-case:** At any point in a Gemini CLI session, you can run actual shell commands by prefixing them with \!. For example, if you want to check the git status, just type \!git status and it will execute in your [terminal](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Run%20a%20single%20command%3A). This saves you from switching windows or context – you’re still in the Gemini CLI, but you’re essentially telling it “let me run this command real quick.”
+
+This tip is about **Shell Mode** in Gemini CLI. There are two ways to use it:
+
+* **Single command:** Just put \! at the start of your prompt, followed by any command and arguments. This will execute that command in the current working directory and display the output [in-line](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=Run%20shell%20commands%20directly%20in,the%20CLI). For example:
+
+\> \!ls \-lh src/
+
+will list the files in the src directory, outputting something like you’d see in a normal terminal. After the output, the Gemini prompt returns so you can continue chatting or issue more commands.
+
+* **Persistent shell mode:** If you enter \! alone and hit Enter, Gemini CLI switches into a sub-mode where you get a shell prompt (often it looks like shell\> or [similar)](https://www.philschmid.de/gemini-cli-cheatsheet#:~:text=). Now you can type multiple shell commands interactively. It’s basically a mini-shell within the CLI. You exit this mode by typing \! on an empty line again (or exit). For instance:
+
+\> \!  
+shell\> pwd  
+/home/alice/project  
+shell\> python \--version  
+Python 3.x.x  
+shell\> \!
+
+After the final \!, you’re back to the normal Gemini prompt.
+
+**Why is this useful?** Because development is a mix of actions and inquiries. You might be discussing something with the AI and realize you need to compile the code or run tests to see something. Instead of leaving the conversation, you can quickly do it and feed the result back into the chat. In fact, Gemini CLI often does this for you as part of its tool usage (it might automatically run \!pytest when you ask to fix tests, for [example](https://genmind.ch/posts/Howto-Supercharge-Your-Terminal-with-Gemini-CLI/#:~:text=)). But as the user, you have full control to do it manually too.
+
+**Examples:**
+
+* After Gemini suggests a fix in code, you can do \!npm run build to see if it compiles, then copy any errors and ask Gemini to help with those.
+
+* If you want to open a file in vim or nano, you could even launch it via \!nano filename (though note that since Gemini CLI has its own interface, using an interactive editor inside it might be a bit awkward – better to use the built-in editor integration or copy to your editor).
+
+* You can use shell commands to gather info for the AI: e.g., \!grep TODO \-R . to find all TODOs in the project, then you might ask Gemini to help address those TODOs.
+
+* Or simply use it for environment tasks: \!pip install some-package if needed, etc., without leaving the CLI.
+
+**Seamless interplay:** One cool aspect is how the conversation can refer to outputs. For example, you could do \!curl [http://example.com](http://example.com) to fetch some data, see the output, then immediately say to Gemini, “Format the above output as JSON” – since the output was printed in the chat, the AI has it in context to work with (provided it’s not too large).
+
+**Terminal as a default shell:** If you find yourself always prefacing commands with \!, you can actually make the shell mode persistent by default. One way is launching Gemini CLI with a specific tool mode (there’s a concept of default tool). But easier: just drop into shell mode (\! with nothing) at session start if you plan to run a lot of manual commands and only occasionally talk to AI. Then you can exit shell mode whenever you want to ask a question. It’s almost like turning Gemini CLI into your normal terminal that happens to have an AI readily available.
+
+**Integration with AI planning:** Sometimes Gemini CLI itself will propose to run a shell command. If you approve, it effectively does the same as \!command. Understanding that, you know you can always intervene. If Gemini is stuck or you want to try something, you don’t have to wait for it to suggest – you can just do it and then continue.
+
+In summary, the **\! passthrough** means *you don’t have to leave Gemini CLI for shell tasks*. It collapses the boundary between chatting with the AI and executing commands on your system. As a pro user, this is fantastic for efficiency – your AI and your terminal become one continuous environment.
